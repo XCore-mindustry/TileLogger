@@ -10,6 +10,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        submodules: 'recursive'
+        token: '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'
    
     - name: Build
       run: |
@@ -27,6 +30,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+          token: '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'
 
       - name: Setup java
         uses: actions/setup-java@v1
