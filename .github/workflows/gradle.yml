@@ -4,13 +4,12 @@ on: [push, workflow_dispatch]
 
 jobs:
   build-linux-arm:
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04-arm
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
         submodules: 'recursive'
-        token: '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'
    
     - name: Build
       run: |
@@ -29,7 +28,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-          token: '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'
 
       - name: Setup java
         uses: actions/setup-java@v1
