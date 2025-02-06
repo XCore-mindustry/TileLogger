@@ -159,7 +159,6 @@ JNIEXPORT void JNICALL Java_tilelogger_TileLogger_reloadSubnets (JNIEnv* env, jc
     }
     catch (const std::exception& e) {
         HandleException(e);
-        return {};
     }
 }
 
