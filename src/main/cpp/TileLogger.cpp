@@ -57,16 +57,19 @@ JNIEXPORT void JNICALL Java_tilelogger_TileLogger_onAction (JNIEnv* env, jclass,
 JNIEXPORT void JNICALL Java_tilelogger_TileLogger_onAction2 (JNIEnv* env, jclass, 
     jshort x, jshort y, jstring juuid, jshort team, jshort block, jshort rotation, jshort config_type, jbyteArray jconfig) {
         
+    uint8_t* jconfig_ptr = nullptr;
+
     try {
-        uint8_t* jconfig_ptr = std::bit_cast<uint8_t*>(env->GetByteArrayElements(jconfig, NULL));
+        jconfig_ptr = reinterpret_cast<uint8_t*>(env->GetByteArrayElements(jconfig, nullptr));
         jsize jconfig_len = env->GetArrayLength(jconfig);
         g_map_history.Record({x, y}, jstringToDataVec(env, juuid), team, block, rotation, config_type, DataVec(jconfig_ptr, jconfig_ptr + jconfig_len));
     }
     catch (const std::exception& e) {
         HandleException(e);
     }
-    finally {
-        if (jconfig_ptr) env->ReleaseByteArrayElements(jconfig, jconfig_ptr, JNI_ABORT);
+
+    if (jconfig_ptr) {
+        env->ReleaseByteArrayElements(jconfig, reinterpret_cast<jbyte*>(jconfig_ptr), JNI_ABORT);
     }
 }
 
