@@ -13,21 +13,14 @@ jobs:
           - os: linux
             arch: x64
             runner: ubuntu-latest
-            gradle_setup: false
-            artifact_paths: build/libs/TileLoggerPacked.jar
           # Linux ARM configuration
           - os: linux
             arch: arm
-            runner: ubuntu-20.04-arm
-            gradle_setup: false
-            artifact_paths: build/libs/TileLoggerPacked.jar
+            runner: ubuntu-22.04-arm
           # Windows x64 configuration
           - os: windows
             arch: x64
             runner: windows-latest
-            gradle_setup: true
-            artifact_paths: |
-              build/libs/${{ github.event.repository.name }}.jar
 
     runs-on: ${{ matrix.runner }}
 
@@ -59,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.repository.name }}-${{ matrix.os }}-${{ matrix.arch }}
-          path: ${{ matrix.artifact_paths }}
+          path: build/libs/TileLoggerPacked.jar
