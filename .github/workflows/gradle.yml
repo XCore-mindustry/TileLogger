@@ -46,9 +46,12 @@ jobs:
       - name: Setup gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Make gradlew executable
+        if: runner.os != 'Windows'
+        run: chmod +x gradlew
+
       - name: Build project
         run: |
-          git submodule update --remote
           ./gradlew build
           ./gradlew packLibToJar
 
