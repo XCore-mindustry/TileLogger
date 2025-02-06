@@ -1,52 +1,59 @@
 name: Build
 
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
-  build-linux-arm:
-    runs-on: ubuntu-24.04-arm
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        submodules: 'recursive'
-   
-    - name: Build
-      run: |
-        git submodule update --remote
-        chmod +x gradlew
-        ./gradlew build
-        ./gradlew packLibToJar
+  build:
+    strategy:
+      matrix:
+        include:
+          # Linux x64 configuration
+          - os: linux
+            arch: x64
+            runner: ubuntu-latest
+            gradle_setup: false
+            artifact_paths: build/libs/TileLoggerPacked.jar
+          # Linux ARM configuration
+          - os: linux
+            arch: arm
+            runner: ubuntu-20.04-arm
+            gradle_setup: false
+            artifact_paths: build/libs/TileLoggerPacked.jar
+          # Windows x64 configuration
+          - os: windows
+            arch: x64
+            runner: windows-latest
+            gradle_setup: true
+            artifact_paths: |
+              build/libs/${{ github.event.repository.name }}.jar
 
-    - name: Upload artifacts
-      run: cp build/libs/TileLoggerPacked.jar ../../../build/
-    
-  build-windows:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.runner }}
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: recursive
 
-      - name: Setup java
-        uses: actions/setup-java@v1
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
+          distribution: temurin
           java-version: 17
 
       - name: Setup gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build
+      - name: Build project
         run: |
           git submodule update --remote
           ./gradlew build
           ./gradlew packLibToJar
 
-      # - name: Upload artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ github.event.repository.name }}-windows
-      #     path: |
-      #       build/libs/${{ github.event.repository.name }}.jar
-      #       build/libs/tileLogger/shared/${{ github.event.repository.name }}.dll
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}-${{ matrix.os }}-${{ matrix.arch }}
+          path: ${{ matrix.artifact_paths }}
