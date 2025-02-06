@@ -16,7 +16,7 @@ public class DefaultPlayerProvider implements PlayerProvider {
     public @Nullable PlayerDescriptor findPlayer(String str) {
         var player = Find.player(str);
 
-        return player == null ? null : new PlayerDescriptor(player.name, player.uuid(), player.id);
+        return player == null ? null : new PlayerDescriptor(player.name, player.uuid(), -1);
     }
 
     @Override

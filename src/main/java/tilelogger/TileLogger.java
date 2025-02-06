@@ -212,7 +212,10 @@ public class TileLogger {
     private static native void onAction2(short x, short y, String uuid, short team, short block, short rotation, short config_type, byte[] config);
     private static native TileState[] getHistory(short x1, short y1, short x2, short y2, String uuid, int teams, int time, long size);
     private static native TileState[] rollback(short x1, short y1, short x2, short y2, String uuid, int teams, int time, int flags);
+
     private static native boolean subnetAccepted(String subnet);
+    public static native void reloadSubnets();
+
     private static native long memoryUsage(long id);
     private static native String getBuildString();
     

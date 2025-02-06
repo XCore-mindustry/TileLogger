@@ -225,5 +225,10 @@ public class TileLoggerPlugin extends Plugin {
     @Override
     public void registerServerCommands(CommandHandler handler) {
         registerCommands(handler);
+
+        handler.register("reload-subnets", "Reloads config/subnets", (args) -> {
+            TileLogger.reloadSubnets();
+            Log.info("Subnets reloaded.");
+        });
     }
 }
