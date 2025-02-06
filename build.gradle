@@ -79,6 +79,7 @@ model {
                     cppCompiler.args '/std:c++20'
                     cppCompiler.args '/EHsc'
                     cppCompiler.args '/W4'
+                    cppCompiler.args '/WX-'
                     cppCompiler.args '/WX'
                     cppCompiler.args '/Zi'
                     cppCompiler.args '/MDd'
