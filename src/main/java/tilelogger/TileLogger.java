@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static tilelogger.TileLoggerPlugin.playerProvider;
+
 public class TileLogger {
     public static List<Block> rollback_blacklist_ = Arrays.asList(Blocks.coreShard, Blocks.coreFoundation, Blocks.coreNucleus, Blocks.coreCitadel, Blocks.coreBastion, Blocks.coreAcropolis);
 
@@ -85,7 +87,7 @@ public class TileLogger {
     public static void sendTileHistory(PlayerDescriptor target, Player caller) {
         Call.clientPacketUnreliable(caller.con, "tilelogger_history_player",
             JsonIO.write(Arrays.stream(getHistory((short)0, (short)0, (short)-1, (short)-1, target.uuid, -1, 0, 100)).map(t -> {
-                PlayerDescriptor desc = XCoreIntegration.findPlayerUuid(t.uuid);
+                PlayerDescriptor desc = playerProvider.findPlayerUuid(t.uuid);
                 return new TileStatePacket(t.x, t.y, desc == null ? "@" + t.team() : desc.toString(),
                             t.uuid, t.valid, t.time, t.block, t.destroy, t.rotation, t.config_type, t.getConfigAsString());
             }
@@ -95,7 +97,7 @@ public class TileLogger {
     public static void sendTileHistory(short x, short y, Player caller) {
         Call.clientPacketUnreliable(caller.con, "tilelogger_history_tile",
             JsonIO.write(Arrays.stream(getHistory(x, y, x, y, "", -1, 0, 100)).map(t -> {
-                PlayerDescriptor desc = XCoreIntegration.findPlayerUuid(t.uuid);
+                PlayerDescriptor desc = playerProvider.findPlayerUuid(t.uuid);
                 return new TileStatePacket(t.x, t.y, desc == null ? "@" + t.team() : desc.toString(),
                             t.uuid, t.valid, t.time, t.block, t.destroy, t.rotation, t.config_type, t.getConfigAsString());
             }
@@ -116,7 +118,7 @@ public class TileLogger {
         String str = String.format("Tile (%d,%d) history. Current time: %s.", x, y, LocalTime.MIN.plusSeconds(duration()).format(DateTimeFormatter.ISO_LOCAL_TIME));
         for (TileState state : getHistory(x, y, x, y, "", -1, 0, size)) {
             Object rotation = state.rotationAsString();
-            PlayerDescriptor desc = XCoreIntegration.findPlayerUuid(state.uuid);
+            PlayerDescriptor desc = playerProvider.findPlayerUuid(state.uuid);
             str += "\n    " + (desc == null ? "@" + state.team() : desc.toString()) + "[white] " + state.timeAsString()
                     + " " + state.blockEmoji() + (rotation == null ? "" : " " + rotation) + " " + state.getConfigAsString();
         }

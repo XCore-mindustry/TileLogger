@@ -65,6 +65,9 @@ JNIEXPORT void JNICALL Java_tilelogger_TileLogger_onAction2 (JNIEnv* env, jclass
     catch (const std::exception& e) {
         HandleException(e);
     }
+    finally {
+        if (jconfig_ptr) env->ReleaseByteArrayElements(jconfig, jconfig_ptr, JNI_ABORT);
+    }
 }
 
 jobjectArray MarhalTileStateArray(JNIEnv* env, const std::vector<TileState> vec) {

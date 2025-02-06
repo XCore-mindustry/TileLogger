@@ -5,28 +5,28 @@ import arc.struct.Seq;
 import arc.util.CommandHandler;
 import arc.util.Log;
 import arc.util.Nullable;
-import arc.util.Strings;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.gen.Player;
 import mindustry.mod.Plugin;
 import mindustry.world.Block;
 import mindustry.world.blocks.power.PowerNode.PowerNodeBuild;
+import tilelogger.api.PlayerProvider;
+import tilelogger.impl.DefaultPlayerProvider;
 
 public class TileLoggerPlugin extends Plugin {
+    public static PlayerProvider playerProvider = new DefaultPlayerProvider();
 
     private void send(@Nullable Player player, String msg, Object... values) {
         if (player == null)
             Log.info(msg, values);
         else
-            //XCoreIntegration.sendBundled(player, msg, values);
             player.sendMessage(String.format(msg, values));
     }
 
     @Override
     public void init() {
-        XCoreIntegration.init();
-        
+
         Events.on(EventType.BuildSelectEvent.class, event -> {
             if (event.builder == null) return; // rollback recursion
             if (event.breaking) return; // handled by BlockBuildBeginEvent 
@@ -74,9 +74,6 @@ public class TileLoggerPlugin extends Plugin {
             PlayerConfig config = PlayerConfig.get(event.player);
             if (config.history_size > 0) {
                 TileLogger.showHistory(event.player, (short) event.tile.centerX(), (short) event.tile.centerY(), config.history_size);
-            }
-            if (XCoreIntegration.useAdminTools(event.player)) {
-                TileLogger.sendTileHistory((short) event.tile.centerX(), (short) event.tile.centerY(), event.player);
             }
 
             switch (config.select) {
@@ -154,13 +151,10 @@ public class TileLoggerPlugin extends Plugin {
                     }
                     case 2: {
                         long size = Long.parseLong(args_seq.pop());
-                        PlayerDescriptor target = XCoreIntegration.findPlayer(args_seq.pop());
+                        PlayerDescriptor target = playerProvider.findPlayer(args_seq.pop());
                         if (target == null) { send(player, "error.player-not-found"); return; }
                         if (size > 0) {
                             TileLogger.showHistory(player, target, size);
-                        }
-                        if (XCoreIntegration.useAdminTools(player)) {
-                            TileLogger.sendTileHistory(target, player);
                         }
                         break;
                     }
@@ -189,7 +183,7 @@ public class TileLoggerPlugin extends Plugin {
                 Seq<String> args_seq = new Seq<>(args).reverse();
                 
                 String name = args_seq.pop();
-                PlayerDescriptor target = player != null && name.equals("self") ? XCoreIntegration.findPlayerUuid(player.uuid()) : XCoreIntegration.findPlayer(name);
+                PlayerDescriptor target = player != null && name.equals("self") ? playerProvider.findPlayerUuid(player.uuid()) : playerProvider.findPlayer(name);
                 if (target == null) { send(player, "error.player-not-found"); return; }
 
                 int time = 0;
@@ -217,6 +211,10 @@ public class TileLoggerPlugin extends Plugin {
                 send(player, "error.wrong-number");
             }
         });
+    }
+
+    public static void setPlayerProvider(PlayerProvider playerProvider) {
+        TileLoggerPlugin.playerProvider = playerProvider;
     }
 
     @Override

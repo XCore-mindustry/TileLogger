@@ -12,21 +12,21 @@ sourceCompatibility = 1.17
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 
-repositories{
+repositories {
     mavenCentral()
-    maven{ url 'https://www.jitpack.io' }
+    maven { url = uri("https://maven.xpdustry.com/mindustry") }
+    maven { url 'https://jitpack.io' }
 }
-
 ext{
     mindustryVersion = 'v146'
 }
 
 dependencies{
+    compileOnly 'org.jetbrains:annotations:26.0.2'
+
     compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
     implementation "com.github.xzxadixzx.useful-stuffs:bundle:bcf5708286"
-    
-    compileOnly fileTree(dir: 'XCore-plugin/build/libs', include: ['*.jar'])
 }
 
 model {
@@ -89,10 +89,6 @@ model {
     }
 }
 
-tasks.register('buildXCorePlugin', GradleBuild) {
-    buildFile = 'XCore-plugin/build.gradle.kts'
-    tasks = ['jar']
-}
 
 tasks.register("packLibToJar", Jar) {
     dependsOn assemble
@@ -106,7 +102,6 @@ tasks.register("packLibToJar", Jar) {
 }
 
 jar {
-    dependsOn tasks.buildXCorePlugin
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     archiveFileName = "${project.archivesBaseName}.jar"
