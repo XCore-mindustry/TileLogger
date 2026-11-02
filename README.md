@@ -1,3 +1,5 @@
+> **Archived.** This project now lives in the XCore monorepo, in [`plugins/tilelogger`](https://github.com/XCore-mindustry/xcore/tree/main/plugins/tilelogger). Releases continue there with the same package coordinates, tagged `tilelogger/vX.Y.Z`. Report issues and send pull requests to the monorepo.
+
 # TileLogger
 
 Mindustry v160 server plugin for tile history, player activity evidence, and bounded rollback. Requires XCore and a 64-bit Java 25 JVM. The matching AdminTools client supports protocol v2 and Java 17/Android.
